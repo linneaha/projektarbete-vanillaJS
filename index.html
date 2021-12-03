@@ -8,10 +8,34 @@
     <title>Projektarbete - Linnea Hensfelt Andersson</title>
 </head>
 <body>
-    <button id="showStudents">Show students</button>
-    <div id="filterContent"></div>
+    <button id="showStudents">Show all students</button> 
+    <div id="search">
+        <input type="text" id="searchField" placeholder="Search student">
+        <button id="searchBtn">Search student</button>
+    </div>
+    <div id="filterContent">
+    <!-- utbildning -->
+    <input type="radio" id="radio1" name="programme" value="frontend">
+    <label for="radio1">Frontend</label>
+    <input type="radio" id="radio2" name="programme" value=".net">
+    <label for="radio2">.NET</label>
+    <input type="radio" id="radio3" name="programme" value="backend">
+    <label for="radio3">Backend</label>
+</div>
+    <!-- filter -->
+    <input type="radio" id="radio4" name="filter" value="age">
+    <label for="radio4">Age</label>
+    <input type="radio" id="radio5" name="filter" value="firstName">
+    <label for="radio5">First Name</label>
+    <input type="radio" id="radio6" name="filter" value="lastName">
+    <label for="radio6">Last Name</label>
+    <select>
+        <option value="stigande">Stigande</option>
+        <option value="fallande">Fallande</option>
+    </select>
+    <button id="filter">Filter students</button>
     <div id="studentContent">
-        <ul id="studentList"></ul>
+        <ol id="studentList"></ol>
     </div>
     <script src="main.js"></script>
 </body>

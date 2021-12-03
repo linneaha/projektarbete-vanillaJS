@@ -1,93 +1,175 @@
+let showStudentsBtn = document.querySelector("#showStudents");
+let studentList = document.querySelector("#studentList");
+let filterContent = document.querySelector("#filterContent");
+let studentContent = document.querySelector("#studentContent");
+let filterButton = document.querySelector("#filter");
+let inputs = document.querySelectorAll("[name = 'filter']");
+let programme = document.querySelectorAll("[name='programme']")
+let dropDown = document.querySelector("select");
+let searchField = document.querySelector("#searchField");
+let searchBtn = document.querySelector("#searchBtn")
+
+let filteredStudents = [];
+let filterOptions = "";
+let programmeFilter = "";
+
 let getData = async (URL) => {
     let response = await fetch(URL);
     let data = await response.json();
     return data;
 };
 
-let showStudentsBtn = document.querySelector("#showStudents");
-let studentList = document.querySelector("#studentList");
-let filterContent = document.querySelector("#filterContent");
-let studentContent = document.querySelector("#studentContent");
+let list = (arr) => {
+    arr.forEach((student) => {
+        let li = document.createElement("li")
+        li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
+        studentList.appendChild(li)
 
-// filtrering radiobutton
-let age = document.createElement("input");
-let firstName = document.createElement("input");
-let lastName = document.createElement("input");
-let filterButton = document.createElement("button");
+        li.addEventListener("click", () => {
+            let ul = document.createElement("ul");
+            let childLi = document.createElement("li");
 
-age.setAttribute("type", "radio");
-age.setAttribute("type", "radio");
-age.setAttribute("name", "filter")
-age.setAttribute("value", "age")
+            li.appendChild(ul);
+            ul.appendChild(childLi);
 
-firstName.setAttribute("type", "radio");
-firstName.setAttribute("type", "radio");
-firstName.setAttribute("name", "filter")
-firstName.setAttribute("value", "Firstname")
+            childLi.textContent = student.hobbies;
+            // jag behöver få ut dessa två arrays och filrera så matchande kommer i en ny array som jag forEach
+        })
+    })
+}
 
-lastName.setAttribute("type", "radio");
-lastName.setAttribute("type", "radio");
-lastName.setAttribute("name", "filter")
-lastName.setAttribute("value", "Lastname")
-
-// dropdown med skolor som filtrering
-let dropDown = document.createElement("select");
-   
-let chooseOption = document.createElement("option")
-let frontendOption = document.createElement("option");
-let netOption = document.createElement("option");
-let backendOption = document.createElement("option");
-
-chooseOption.setAttribute("value", "Choose")
-frontendOption.setAttribute("value", "Frontend");
-netOption.setAttribute("value", ".NET");
-backendOption.setAttribute("value", "Backend");
-
-chooseOption.textContent = "Choose school";
-frontendOption.textContent = "Frontend";
-netOption.textContent = ".NET";
-backendOption.textContent = "Backend";
-
-dropDown.add(chooseOption);
-dropDown.add(frontendOption);
-dropDown.add(netOption);
-dropDown.add(backendOption); 
-
-let filteredSchools = [];
+let filter = () => {
+    if (dropDown.value === "stigande"){ 
+    if (filterOptions === "age") {
+        filteredStudents.sort((a, b) => a.age - b.age);
+    } else if (filterOptions === "firstName") {
+        filteredStudents.sort((a, b) => a.firstName.localeCompare(b.firstName))
+    } else {
+        filteredStudents.sort((a, b) => a.lastName.localeCompare(b.lastName))
+    }
+} else {
+    if (filterOptions === "age") {
+        filteredStudents.sort((a, b) => b.age - a.age);
+    } else if (filterOptions === "firstName") {
+        filteredStudents.sort((a, b) => b.firstName.localeCompare(a.firstName))
+    } else {
+        filteredStudents.sort((a, b) => b.lastName.localeCompare(a.lastName))
+    }
+}
+}
 
 let renderData = async () => {
     let students = await getData("https://api.mocki.io/v2/01047e91/students");
     let schools = await getData("https://api.mocki.io/v2/01047e91/schools");
 
-// Visa studenter-knapp
     showStudentsBtn.addEventListener("click", () => {
-        filterContent.innerHTML = "";
-        studentList.innerHTML = "";
-        filterContent.append(dropDown, age, firstName, lastName);
-     
-        students.forEach((student) => {
-           let li = document.createElement("li")
-           li.textContent = `${student.firstName} ${student.lastName}`
-           studentList.appendChild(li);
-        });
+        studentList.textContent = "";
+        list(students);    
     });
 
-    dropDown.addEventListener("click", ()=>{
+    filterButton.addEventListener("click", () => {
         studentList.textContent = "";
-    if (dropDown.value === "Frontend") {
-        filteredSchools = students.filter((student) => student.programme === "Frontend");
-    } else if (dropDown.value === ".NET") {
-        filteredSchools = students.filter((student) => student.programme === ".NET");
-    } else if (dropDown.value === "Backend"){
-        filteredSchools = students.filter((student) => student.programme === "Backend");
-    } else {
-        studentList.textContent = "";
-    }
-    filteredSchools.forEach((student)=> {
-        let li = document.createElement("li")
-           li.textContent = `${student.firstName} ${student.lastName}`
-           studentList.appendChild(li);
+
+        inputs.forEach((input) => {
+            if (input.checked) {
+                filterOptions = input.value;
+            }
+        })
+        programme.forEach((input) => {
+            if(input.checked) {
+                programmeFilter = input.value;
+            }
+        })
+
+        if (programmeFilter === "frontend") {
+            filteredStudents = students.filter((student) => student.programme === "Frontend");
+            filter();
+        } else if (programmeFilter === ".net") {
+            filteredStudents = students.filter((student) => student.programme === ".NET");
+            filter();
+        } else if (programmeFilter === "backend") {
+            filteredStudents = students.filter((student) => student.programme === "Backend");
+            filter();
+        } else {
+
+            if (dropDown.value === "stigande"){ 
+                if (filterOptions === "age") {
+                    filteredStudents = students.sort((a, b) => a.age - b.age);
+                } else if (filterOptions === "firstName") {
+                    filteredStudents = students.sort((a, b) => a.firstName.localeCompare(b.firstName))
+                } else {
+                    filteredStudents = students.sort((a, b) => a.lastName.localeCompare(b.lastName))
+                }
+            } else {
+                if (filterOptions === "age") {
+                    filteredStudents = students.sort((a, b) => b.age - a.age);
+                } else if (filterOptions === "firstName") {
+                    filteredStudents = students.sort((a, b) => b.firstName.localeCompare(a.firstName))
+                } else {
+                    filteredStudents = students.sort((a, b) => b.lastName.localeCompare(a.lastName))
+                }
+            }
+        }
+        list(filteredStudents);
     })
-});
+
+    searchBtn.addEventListener("click", () => {
+        let input = searchField.value.toUpperCase();
+        students.forEach((student) =>{
+            let name = student.firstName;
+            let surname = student.lastName;
+            if (input === name) {
+                let li = document.createElement("li")
+                li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
+                studentList.appendChild(li)
+            }
+        })
+    })
 }
 renderData();
+
+
+// if (ul.style.display === "none") {
+//     ul.style.display = "block";
+//   } else {
+//     ul.style.display = "none";
+//   }
+
+// li.addEventListener("click", () => {
+//     let shared = students.filter((hobby) => schools.includes(hobby));
+//     console.log(shared)
+// });
+// if varuiabel ==== hobby
+// för att plocka upp stringen i skolorna
+
+
+// shared.forEach((match) =>
+//      let sharedUl = document.createElement("ul");
+//      studentList
+//    let li = document.createElement("li")
+//    li.textContent = match;
+//    studentList.appendChild(li);
+// });
+
+// students.forEach((student)=> {
+//     let hobby = student.hobbies;
+//     schools.forEach((school)=> {
+//      let activity = school.activities;
+//      shared = hobby.filter((match)=> activity.includes(match));
+//      console.log(shared)
+//     })
+// })
+
+// let hobby = student.hobbies;
+// schools.forEach((school)=> {
+//     let activity = school.activities;
+//     let shared = hobby.filter((match)=> activity.includes(match));
+//     shared.forEach(match=> {
+//         let matchli = document.createElement("li")
+//         let ul = document.createElement("ul")
+//         li.appendChild(ul);
+//         ul.appendChild(matchli)
+//         matchli.textContent = match.name;
+// })
+// console.log(shared)
+// })
