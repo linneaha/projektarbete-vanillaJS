@@ -20,20 +20,24 @@ const getData = async (URL) => {
 };
 
 const list = (arr, arr2) => {
-    let shared = 
+
+    let shared = []
+
     arr.forEach((student) => {
         let li = document.createElement("li")
         li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
         studentList.appendChild(li)
 
         li.addEventListener("click", () => {
+
+            let ul = document.createElement("ul");
+            li.appendChild(ul);
+            
             arr2.forEach(school => {
+                let childLi = document.createElement("li");
                 for (let i = 0; i < school.activities.length; i++) {
                     if (student.hobbies.includes(school.activities[i])) {
-                        let ul = document.createElement("ul");
-                        let childLi = document.createElement("li");
-            
-                        li.appendChild(ul);
+
                         ul.appendChild(childLi);
                         childLi.textContent = school.name
                     }
@@ -119,6 +123,7 @@ const renderData = async () => {
                 }
             }
         }
+
         filteredStudents.forEach((student) => {
             let li = document.createElement("li")
             li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
@@ -157,9 +162,11 @@ const renderData = async () => {
             let lastName = student.lastName.toLowerCase();
             let programme = student.programme.toLowerCase();
             let wholeName = student.firstName.toLowerCase() + " " + student.lastName.toLowerCase();
+            let hobby = student.hobbies;
 
-            return firstName === input || lastName === input || wholeName === input || programme === input || hobbies.includes(input)
+            return firstName === input || lastName === input || wholeName === input || programme === input || hobby.includes(input)
         });
+
         searchStudents.forEach(student => {
             let li = document.createElement("li")
             li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
