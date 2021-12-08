@@ -4,67 +4,76 @@ let filterContent = document.querySelector("#filterContent");
 let studentContent = document.querySelector("#studentContent");
 let filterButton = document.querySelector("#filter");
 let inputs = document.querySelectorAll("[name = 'filter']");
-let programme = document.querySelectorAll("[name='programme']")
+let programme = document.querySelectorAll("[name='programme']");
 let dropDown = document.querySelector("select");
 let searchField = document.querySelector("#searchField");
-let searchBtn = document.querySelector("#searchBtn")
+let searchBtn = document.querySelector("#searchBtn");
 
 let filteredStudents = [];
 let filterOptions = "";
 let programmeFilter = "";
 
-let getData = async (URL) => {
+const getData = async (URL) => {
     let response = await fetch(URL);
     let data = await response.json();
     return data;
 };
 
-let list = (arr) => {
+const list = (arr, arr2) => {
+    let shared = 
     arr.forEach((student) => {
         let li = document.createElement("li")
         li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
         studentList.appendChild(li)
 
         li.addEventListener("click", () => {
-            let ul = document.createElement("ul");
-            let childLi = document.createElement("li");
-
-            li.appendChild(ul);
-            ul.appendChild(childLi);
-
-            childLi.textContent = student.hobbies;
-            // jag behöver få ut dessa två arrays och filrera så matchande kommer i en ny array som jag forEach
+            arr2.forEach(school => {
+                for (let i = 0; i < school.activities.length; i++) {
+                    if (student.hobbies.includes(school.activities[i])) {
+                        let ul = document.createElement("ul");
+                        let childLi = document.createElement("li");
+            
+                        li.appendChild(ul);
+                        ul.appendChild(childLi);
+                        childLi.textContent = school.name
+                    }
+                }
+            })
         })
     })
 }
 
-let filter = () => {
-    if (dropDown.value === "stigande"){ 
-    if (filterOptions === "age") {
-        filteredStudents.sort((a, b) => a.age - b.age);
-    } else if (filterOptions === "firstName") {
-        filteredStudents.sort((a, b) => a.firstName.localeCompare(b.firstName))
+const filter = () => {
+    if (dropDown.value === "stigande") { 
+        if (filterOptions === "age") {
+            filteredStudents.sort((a, b) => a.age - b.age);
+        } else if (filterOptions === "firstName") {
+            filteredStudents.sort((a, b) => a.firstName.localeCompare(b.firstName))
+        } else {
+            filteredStudents.sort((a, b) => a.lastName.localeCompare(b.lastName))
+        }
     } else {
-        filteredStudents.sort((a, b) => a.lastName.localeCompare(b.lastName))
+        if (filterOptions === "age") {
+            filteredStudents.sort((a, b) => b.age - a.age);
+        } else if (filterOptions === "firstName") {
+            filteredStudents.sort((a, b) => b.firstName.localeCompare(a.firstName))
+        } else {
+            filteredStudents.sort((a, b) => b.lastName.localeCompare(a.lastName))
+        }
     }
-} else {
-    if (filterOptions === "age") {
-        filteredStudents.sort((a, b) => b.age - a.age);
-    } else if (filterOptions === "firstName") {
-        filteredStudents.sort((a, b) => b.firstName.localeCompare(a.firstName))
-    } else {
-        filteredStudents.sort((a, b) => b.lastName.localeCompare(a.lastName))
-    }
-}
 }
 
-let renderData = async () => {
+const renderData = async () => {
     let students = await getData("https://api.mocki.io/v2/01047e91/students");
     let schools = await getData("https://api.mocki.io/v2/01047e91/schools");
 
+    let hobbies = [];
+    let activities = [];
+    let shared = [];
+
     showStudentsBtn.addEventListener("click", () => {
         studentList.textContent = "";
-        list(students);    
+        list(students,schools);    
     });
 
     filterButton.addEventListener("click", () => {
@@ -110,66 +119,53 @@ let renderData = async () => {
                 }
             }
         }
-        list(filteredStudents);
-    })
+        filteredStudents.forEach((student) => {
+            let li = document.createElement("li")
+            li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
+            studentList.appendChild(li)
+            
+            // skolor som matchar lista och funktionalitet
+            schools.forEach((school) => {
+                let ul = document.createElement("ul");
+                ul.style.display = "none";
+                let childLi = document.createElement("li");
 
+                li.appendChild(ul);
+                ul.appendChild(childLi);
+
+                childLi.textContent = school.name;
+
+                if (school.programmes.indexOf(student.programme) > -1) {
+                    li.addEventListener("click", () => {
+                        if (ul.style.display === "none") {
+                            ul.style.display = "block";
+                        } else {
+                            ul.style.display = "none";
+                        }
+                    });
+                }
+            })
+        })
+    })
+    // sökfältet
     searchBtn.addEventListener("click", () => {
-        let input = searchField.value.toUpperCase();
-        students.forEach((student) =>{
-            let name = student.firstName;
-            let surname = student.lastName;
-            if (input === name) {
-                let li = document.createElement("li")
-                li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
-                studentList.appendChild(li)
-            }
+        studentList.textContent = "";
+        let input = searchField.value.toLowerCase();
+        
+        let searchStudents = students.filter((student) => {
+            let firstName = student.firstName.toLowerCase();
+            let lastName = student.lastName.toLowerCase();
+            let programme = student.programme.toLowerCase();
+            let wholeName = student.firstName.toLowerCase() + " " + student.lastName.toLowerCase();
+
+            return firstName === input || lastName === input || wholeName === input || programme === input || hobbies.includes(input)
+        });
+        searchStudents.forEach(student => {
+            let li = document.createElement("li")
+            li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
+            studentList.appendChild(li)
         })
     })
 }
 renderData();
 
-
-// if (ul.style.display === "none") {
-//     ul.style.display = "block";
-//   } else {
-//     ul.style.display = "none";
-//   }
-
-// li.addEventListener("click", () => {
-//     let shared = students.filter((hobby) => schools.includes(hobby));
-//     console.log(shared)
-// });
-// if varuiabel ==== hobby
-// för att plocka upp stringen i skolorna
-
-
-// shared.forEach((match) =>
-//      let sharedUl = document.createElement("ul");
-//      studentList
-//    let li = document.createElement("li")
-//    li.textContent = match;
-//    studentList.appendChild(li);
-// });
-
-// students.forEach((student)=> {
-//     let hobby = student.hobbies;
-//     schools.forEach((school)=> {
-//      let activity = school.activities;
-//      shared = hobby.filter((match)=> activity.includes(match));
-//      console.log(shared)
-//     })
-// })
-
-// let hobby = student.hobbies;
-// schools.forEach((school)=> {
-//     let activity = school.activities;
-//     let shared = hobby.filter((match)=> activity.includes(match));
-//     shared.forEach(match=> {
-//         let matchli = document.createElement("li")
-//         let ul = document.createElement("ul")
-//         li.appendChild(ul);
-//         ul.appendChild(matchli)
-//         matchli.textContent = match.name;
-// })
-// console.log(shared)
-// })
