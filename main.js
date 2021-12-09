@@ -19,31 +19,11 @@ const getData = async (URL) => {
     return data;
 };
 
-const list = (arr, arr2) => {
-
-    let shared = []
-
+const list = (arr) => {
     arr.forEach((student) => {
         let li = document.createElement("li")
         li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
         studentList.appendChild(li)
-
-        li.addEventListener("click", () => {
-
-            let ul = document.createElement("ul");
-            li.appendChild(ul);
-            
-            arr2.forEach(school => {
-                let childLi = document.createElement("li");
-                for (let i = 0; i < school.activities.length; i++) {
-                    if (student.hobbies.includes(school.activities[i])) {
-
-                        ul.appendChild(childLi);
-                        childLi.textContent = school.name
-                    }
-                }
-            })
-        })
     })
 }
 
@@ -71,13 +51,9 @@ const renderData = async () => {
     let students = await getData("https://api.mocki.io/v2/01047e91/students");
     let schools = await getData("https://api.mocki.io/v2/01047e91/schools");
 
-    let hobbies = [];
-    let activities = [];
-    let shared = [];
-
     showStudentsBtn.addEventListener("click", () => {
         studentList.textContent = "";
-        list(students,schools);    
+        list(students);    
     });
 
     filterButton.addEventListener("click", () => {
@@ -128,31 +104,47 @@ const renderData = async () => {
             let li = document.createElement("li")
             li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
             studentList.appendChild(li)
-            
-            // skolor som matchar lista och funktionalitet
-            schools.forEach((school) => {
+        
+            schools.forEach(school => {
                 let ul = document.createElement("ul");
-                ul.style.display = "none";
+                ul.style.display = "none"; 
                 let childLi = document.createElement("li");
-
-                li.appendChild(ul);
-                ul.appendChild(childLi);
-
                 childLi.textContent = school.name;
 
-                if (school.programmes.indexOf(student.programme) > -1) {
-                    li.addEventListener("click", () => {
-                        if (ul.style.display === "none") {
-                            ul.style.display = "block";
-                        } else {
-                            ul.style.display = "none";
-                        }
-                    });
+                li.appendChild(ul);
+
+                if (student.hobbies.every(match => school.activities.includes(match)) && school.programmes.indexOf(student.programme) > -1) {
+                    childLi.style.color = "green";
+                    
+                } else if (school.programmes.indexOf(student.programme) > -1) {
+                    childLi.style.color = "darkOrange";
+                    // if ()
+                    
+                } else { 
+                    childLi.style.color = "red";
+                    
                 }
+
+                li.addEventListener("click", () => {
+                    if (ul.style.display === "none") {
+                        ul.style.display = "block";
+                    } else {
+                        ul.style.display = "none";
+                    }
+                    
+
+                    if (childLi.style.color === "green") {
+                        ul.appendChild(childLi, ul.childNodes[0]);
+                    } else if (childLi.style.color === "darkOrange"){
+                        ul.insertBefore(childLi, ul.childNodes[1]);
+                    } else {    
+                        ul.insertBefore(childLi, ul.lastElementChild);
+                    }
+                })
             })
         })
     })
-    // sökfältet
+
     searchBtn.addEventListener("click", () => {
         studentList.textContent = "";
         let input = searchField.value.toLowerCase();
@@ -164,15 +156,9 @@ const renderData = async () => {
             let wholeName = student.firstName.toLowerCase() + " " + student.lastName.toLowerCase();
             let hobby = student.hobbies;
 
-            return firstName === input || lastName === input || wholeName === input || programme === input || hobby.includes(input)
+            return firstName === input || lastName === input || wholeName === input || programme === input || hobby.includes(input);
         });
-
-        searchStudents.forEach(student => {
-            let li = document.createElement("li")
-            li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
-            studentList.appendChild(li)
-        })
+        list(searchStudents);
     })
 }
 renderData();
-
