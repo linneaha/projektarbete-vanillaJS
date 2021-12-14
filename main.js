@@ -1,13 +1,10 @@
 let showStudentsBtn = document.querySelector("#showStudents");
 let studentList = document.querySelector("#studentList");
-let filterContent = document.querySelector("#filterContent");
-let studentContent = document.querySelector("#studentContent");
 let filterButton = document.querySelector("#filter");
 let inputs = document.querySelectorAll("[name = 'filter']");
 let programme = document.querySelectorAll("[name='programme']");
 let dropDown = document.querySelector("select");
 let searchField = document.querySelector("#searchField");
-let searchBtn = document.querySelector("#searchBtn");
 
 let filteredStudents = [];
 let filterOptions = "";
@@ -104,25 +101,32 @@ const renderData = async () => {
             let li = document.createElement("li")
             li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
             studentList.appendChild(li)
-        
+
+            let ul = document.createElement("ul");
+            ul.style.display = "none"; 
+            li.appendChild(ul);
+
             schools.forEach(school => {
-                let ul = document.createElement("ul");
-                ul.style.display = "none"; 
                 let childLi = document.createElement("li");
-                childLi.textContent = school.name;
-
-                li.appendChild(ul);
-
+                childLi.textContent = school.name; 
+                ul.appendChild(childLi);
+                
                 if (student.hobbies.every(match => school.activities.includes(match)) && school.programmes.indexOf(student.programme) > -1) {
                     childLi.style.color = "green";
-                    
+                    ul.insertBefore(childLi, ul.childNodes[0]);
+
                 } else if (school.programmes.indexOf(student.programme) > -1) {
                     childLi.style.color = "darkOrange";
-                    // if ()
-                    
+
+                    if (ul.firstChild.style.color === "green" || ul.childNodes[0].style.color === "green" && ul.childNodes[1].style.color === "green") {
+                        ul.insertBefore(childLi, ul.childNodes[1]);
+                    } else {
+                        ul.insertBefore(childLi, ul.childNodes[0]);
+                    }
+
                 } else { 
                     childLi.style.color = "red";
-                    
+                    ul.appendChild(childLi, ul.lastChild);
                 }
 
                 li.addEventListener("click", () => {
@@ -131,21 +135,12 @@ const renderData = async () => {
                     } else {
                         ul.style.display = "none";
                     }
-                    
-
-                    if (childLi.style.color === "green") {
-                        ul.appendChild(childLi, ul.childNodes[0]);
-                    } else if (childLi.style.color === "darkOrange"){
-                        ul.insertBefore(childLi, ul.childNodes[1]);
-                    } else {    
-                        ul.insertBefore(childLi, ul.lastElementChild);
-                    }
                 })
             })
         })
     })
 
-    searchBtn.addEventListener("click", () => {
+    searchField.addEventListener("keyup", () => {
         studentList.textContent = "";
         let input = searchField.value.toLowerCase();
         
@@ -154,9 +149,9 @@ const renderData = async () => {
             let lastName = student.lastName.toLowerCase();
             let programme = student.programme.toLowerCase();
             let wholeName = student.firstName.toLowerCase() + " " + student.lastName.toLowerCase();
-            let hobby = student.hobbies;
+            let hobby = student.hobbies.find(match => match.includes(input));
 
-            return firstName === input || lastName === input || wholeName === input || programme === input || hobby.includes(input);
+            return firstName === input || lastName === input || wholeName === input || programme.includes(input) || hobby;
         });
         list(searchStudents);
     })

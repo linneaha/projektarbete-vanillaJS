@@ -1,0 +1,20 @@
+#one {
+    padding: 15px 15px 0px 15px;
+}
+
+#two {
+    padding: 15px 15px 0px 15px;
+}
+
+#three {
+    padding: 5px 15px 0px 15px;
+}
+
+button {
+    margin: 5px 5px 0px 5px;
+}
+
+select {
+    margin: 5px 5px 0px 10px;
+    padding: 1px 5px 1px 5px;
+}
