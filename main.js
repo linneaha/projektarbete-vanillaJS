@@ -18,28 +18,28 @@ const getData = async (URL) => {
 
 const list = (arr) => {
     arr.forEach((student) => {
-        let li = document.createElement("li")
-        li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
-        studentList.appendChild(li)
+        let li = document.createElement("li");
+        li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`;
+        studentList.appendChild(li);
     })
 }
 
 const filter = () => {
-    if (dropDown.value === "stigande") { 
+    if (dropDown.value === "ascending") { 
         if (filterOptions === "age") {
             filteredStudents.sort((a, b) => a.age - b.age);
         } else if (filterOptions === "firstName") {
-            filteredStudents.sort((a, b) => a.firstName.localeCompare(b.firstName))
+            filteredStudents.sort((a, b) => a.firstName.localeCompare(b.firstName));
         } else {
-            filteredStudents.sort((a, b) => a.lastName.localeCompare(b.lastName))
+            filteredStudents.sort((a, b) => a.lastName.localeCompare(b.lastName));
         }
     } else {
         if (filterOptions === "age") {
             filteredStudents.sort((a, b) => b.age - a.age);
         } else if (filterOptions === "firstName") {
-            filteredStudents.sort((a, b) => b.firstName.localeCompare(a.firstName))
+            filteredStudents.sort((a, b) => b.firstName.localeCompare(a.firstName));
         } else {
-            filteredStudents.sort((a, b) => b.lastName.localeCompare(a.lastName))
+            filteredStudents.sort((a, b) => b.lastName.localeCompare(a.lastName));
         }
     }
 }
@@ -78,29 +78,29 @@ const renderData = async () => {
             filter();
         } else {
 
-            if (dropDown.value === "stigande"){ 
+            if (dropDown.value === "ascending"){ 
                 if (filterOptions === "age") {
                     filteredStudents = students.sort((a, b) => a.age - b.age);
                 } else if (filterOptions === "firstName") {
-                    filteredStudents = students.sort((a, b) => a.firstName.localeCompare(b.firstName))
+                    filteredStudents = students.sort((a, b) => a.firstName.localeCompare(b.firstName));
                 } else {
-                    filteredStudents = students.sort((a, b) => a.lastName.localeCompare(b.lastName))
+                    filteredStudents = students.sort((a, b) => a.lastName.localeCompare(b.lastName));
                 }
             } else {
                 if (filterOptions === "age") {
                     filteredStudents = students.sort((a, b) => b.age - a.age);
                 } else if (filterOptions === "firstName") {
-                    filteredStudents = students.sort((a, b) => b.firstName.localeCompare(a.firstName))
+                    filteredStudents = students.sort((a, b) => b.firstName.localeCompare(a.firstName));
                 } else {
-                    filteredStudents = students.sort((a, b) => b.lastName.localeCompare(a.lastName))
+                    filteredStudents = students.sort((a, b) => b.lastName.localeCompare(a.lastName));
                 }
             }
         }
 
         filteredStudents.forEach((student) => {
-            let li = document.createElement("li")
-            li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`
-            studentList.appendChild(li)
+            let li = document.createElement("li");
+            li.textContent = `${student.firstName} ${student.lastName}, ${student.age}`;
+            studentList.appendChild(li);
 
             let ul = document.createElement("ul");
             ul.style.display = "none"; 
